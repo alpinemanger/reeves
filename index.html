@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Be the Chancellor: Rachel Reeves’ £30 Billion Challenge</title>
+  <style>
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      max-width: 900px;
+      margin: 0 auto 2rem auto;
+      line-height: 1.4;
+      background: #ffffff; /* plain white background for contrast */
+      color: #000000;
+    }
+    .gov-banner {
+      background: #000000; /* black with white text */
+      color: #ffffff;
+      padding: 0.5rem 1rem;
+      font-size: 0.9rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .gov-banner span.logo {
+      font-weight: 700;
+      border-right: 1px solid #555;
+      padding-right: 0.6rem;
+      margin-right: 0.4rem;
+    }
+    .top-bar {
+      padding: 0.6rem 1rem;
+      background: #000000; /* black with white text */
+      color: #ffffff;
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 1rem;
+      flex-wrap: wrap;
+      font-size: 0.9rem;
+    }
+    .page-inner {
+      background: #ffffff;
+      margin: 1rem;
+      padding: 1.5rem;
+      border-radius: 8px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+      border: 2px solid #000000; /* black frame */
+    }
+    h1 { font-size: 1.6rem; margin-top: 0.5rem; }
+    h2 { font-size: 1.3rem; margin-top: 1.2rem; }
+    .decor-line {
+      text-align: center;
+      margin-bottom: 0.5rem;
+      font-size: 1.1rem;
+    }
+    .option-box {
+      border: 1px solid #000000;
+      border-radius: 8px;
+      padding: 1rem;
+      margin-top: 1rem;
+      background: #ffffff; /* white background, black text */
+    }
+    .desc { font-style: italic; margin-bottom: 0.75rem; }
+    .revenue { font-weight: bold; margin-bottom: 0.5rem; }
+    .pros, .cons { margin: 0.25rem 0; padding-left: 1.2rem; }
+    .controls {
+      margin-top: 1rem;
+      display: flex;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+    button {
+      padding: 0.4rem 0.8rem;
+      border-radius: 4px;
+      border: 1px solid #000000;
+      cursor: pointer;
+      font: inherit;
+    }
+    button.primary {
+      background: #000000;  /* black with white text */
+      color: #ffffff;
+    }
+    button.secondary {
+      background: #ffffff;  /* white with black text */
+      color: #000000;
+    }
+    button:disabled {
+      opacity: 0.5;
+      cursor: default;
+    }
+    .small { font-size: 0.85rem; }
+    .tagline { font-size: 0.95rem; color: #000000; }
+    .option-summary {
+      margin-top: 0.5rem;
+      padding: 0.5rem 0;
+      border-bottom: 1px dashed #000000;
+    }
+    .checkbox-inline {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+    .score-legend {
+      margin-top: 0.75rem;
+      font-size: 0.9rem;
+      color: #000000;
+    }
+    .score-legend ul {
+      margin: 0.25rem 0;
+      padding-left: 1.1rem;
+    }
+    .final-list ul {
+      padding-left: 1.1rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="gov-banner">
+    <span class="logo">HM Treasury (Simulation)</span>
+    <span>UK Budget Exercise – A-Level / IB Economics</span>
+  </div>
+
+  <div class="top-bar">
+    <div>
+      <strong>Total extra revenue:</strong>
+      £<span id="totalRevenue">0</span> bn
+      <span class="small">(Target: £30 bn)</span>
+    </div>
+    <div id="progress" class="small"></div>
+  </div>
+
+  <div class="page-inner">
+    <p class="decor-line" aria-hidden="true">🇬🇧 ⚖️ 💷 🇬🇧 ⚖️ 💷 🇬🇧</p>
+
+    <h1>Be the Chancellor: Rachel Reeves’ £30 Billion Challenge (2025)</h1>
+    <p class="tagline">
+      You are the Chancellor of the Exchequer. The government must raise <strong>£30 billion</strong> in extra tax revenue.
+      You will see ten tax options one by one. Decide whether to use each one and watch how your total changes.
+    </p>
+
+    <div id="screen-option" style="display:block;"></div>
+    <div id="screen-review" style="display:none;"></div>
+    <div id="screen-final" style="display:none;"></div>
+  </div>
+
+  <script>
+    const TARGET = 30;
+
+    const options = [
+      {
+        id: 1,
+        title: "Increase Basic Rate of Income Tax by 2p (20% → 22%)",
+        desc: "Everyone who pays income tax would pay slightly more on most of their earnings.",
+        revenue: 14,
+        pros: [
+          "Big and reliable yield – collects a large amount quickly from a wide base.",
+          "Simple to apply – uses existing HMRC systems, no new rules needed."
+        ],
+        cons: [
+          "Reduces disposable income – people have less to spend, which may slow consumer demand.",
+          "Politically unpopular – breaking past promises not to raise income tax could damage credibility."
+        ],
+        balanceScore: -1
+      },
+      {
+        id: 2,
+        title: "Increase Additional Rate of Income Tax by 2p (45% → 47%)",
+        desc: "People earning over about £125,000 would pay more on their top slice of income.",
+        revenue: 3,
+        pros: [
+          "Progressive measure – targets those most able to pay without affecting lower earners.",
+          "Popular fairness signal – demonstrates that wealthier groups contribute more."
+        ],
+        cons: [
+          "Limited revenue gain – only a small share of taxpayers fall in this bracket.",
+          "Risk of avoidance or relocation – some high earners may move income or residence abroad."
+        ],
+        balanceScore: 1
+      },
+      {
+        id: 3,
+        title: "Freeze Income-Tax Thresholds for Two More Years (\"Fiscal Drag\")",
+        desc: "Keeps tax-free limits the same, so more people drift into higher bands as wages rise.",
+        revenue: 6,
+        pros: [
+          "Raises money quietly – revenue rises automatically as wages grow.",
+          "Politically easier – appears as stability rather than an overt tax hike."
+        ],
+        cons: [
+          "Stealth tax – people pay more tax without any headline rate change.",
+          "Regressive over time – lower and middle earners feel the squeeze most."
+        ],
+        balanceScore: 0
+      },
+      {
+        id: 4,
+        title: "Raise Corporation Tax from 25% to 27%",
+        desc: "Companies would pay a slightly higher share of their profits in tax.",
+        revenue: 5,
+        pros: [
+          "Targets profitable firms – focuses the burden on those performing well.",
+          "Fits fairness narrative – shows business \"sharing the load\"."
+        ],
+        cons: [
+          "May deter investment – firms could scale back or relocate projects.",
+          "Competitiveness risk – the UK may look less attractive to global investors."
+        ],
+        balanceScore: 0
+      },
+      {
+        id: 5,
+        title: "Cut Capital-Gains Allowance / Align CGT with Income-Tax Rates",
+        desc: "People who sell assets would pay similar rates to workers on income.",
+        revenue: 6,
+        pros: [
+          "Reduces inequality – narrows the gap between wealth and work taxation.",
+          "Improves perceived fairness – treats investment profits like earned income."
+        ],
+        cons: [
+          "May discourage entrepreneurship – investors could hold assets longer or invest elsewhere.",
+          "Harder to administer – encourages creative accounting to re-label income."
+        ],
+        balanceScore: 1
+      },
+      {
+        id: 6,
+        title: "Introduce a Mansion Tax on Homes Worth Over £2 Million",
+        desc: "Owners of very high-value homes would pay an annual property tax based on valuation.",
+        revenue: 3,
+        pros: [
+          "Highly progressive – affects only the wealthiest property owners.",
+          "Visible fairness – easy for the public to see who pays and why."
+        ],
+        cons: [
+          "Valuation problems – deciding which homes qualify could be complex and disputed.",
+          "Asset-rich, cash-poor issue – some older owners might struggle to pay without selling."
+        ],
+        balanceScore: 1
+      },
+      {
+        id: 7,
+        title: "Cut Inheritance-Tax Allowances",
+        desc: "Families would pay inheritance tax on a larger share of what they pass on after death.",
+        revenue: 4,
+        pros: [
+          "Targets unearned wealth – helps reduce inter-generational inequality.",
+          "Popular with younger voters – supports a sense of fairness in housing wealth."
+        ],
+        cons: [
+          "Politically explosive – older homeowners and the press likely to oppose strongly.",
+          "Seen as double taxation – assets already taxed once when earned."
+        ],
+        balanceScore: 0
+      },
+      {
+        id: 8,
+        title: "Reform Non-Dom Rules / Tighten Wealth-Tax Enforcement",
+        desc: "People who live in the UK but keep wealth abroad would lose special tax privileges.",
+        revenue: 3,
+        pros: [
+          "Strong fairness message – all UK residents pay their share.",
+          "Popular with the public – symbol of closing loopholes for the rich."
+        ],
+        cons: [
+          "Uncertain yield – wealthy individuals may move money or leave the UK.",
+          "Hard to enforce – requires global data-sharing and complex investigations."
+        ],
+        balanceScore: 1
+      },
+      {
+        id: 9,
+        title: "Extend or Increase Windfall Tax on Banks’ Profits",
+        desc: "Banks would pay extra tax on unusually high profits from high interest rates.",
+        revenue: 5,
+        pros: [
+          "Captures temporary gains – uses extraordinary profits for public good.",
+          "Highly popular – voters approve when banks are seen to \"give back\"."
+        ],
+        cons: [
+          "Could reduce lending – banks may tighten credit to protect margins.",
+          "Not sustainable – revenues fade when profits normalise."
+        ],
+        balanceScore: 0
+      },
+      {
+        id: 10,
+        title: "Raise VAT by 2 Percentage Points (20% → 22%)",
+        desc: "Almost all goods and services would become slightly more expensive.",
+        revenue: 13,
+        pros: [
+          "Huge, quick yield – raises large sums fast through existing systems.",
+          "Efficient collection – simple for HMRC and businesses to implement."
+        ],
+        cons: [
+          "Inflationary effect – pushes prices up just as living costs ease.",
+          "Regressive impact – lower-income households spend a bigger share on VAT-rated goods."
+        ],
+        balanceScore: -1
+      }
+    ];
+
+    let currentIndex = 0;
+    let selections = new Array(options.length).fill(false);
+    let finalised = false;
+
+    const totalSpan = document.getElementById('totalRevenue');
+    const progressSpan = document.getElementById('progress');
+    const screenOption = document.getElementById('screen-option');
+    const screenReview = document.getElementById('screen-review');
+    const screenFinal = document.getElementById('screen-final');
+
+    function calculateTotal() {
+      let total = 0;
+      options.forEach((opt, i) => {
+        if (selections[i]) total += opt.revenue;
+      });
+      return total;
+    }
+
+    function calculateScore() {
+      let score = 0;
+      options.forEach((opt, i) => {
+        if (selections[i]) score += opt.balanceScore;
+      });
+      return score;
+    }
+
+    function updateTopBar() {
+      const total = calculateTotal();
+      totalSpan.textContent = total;
+      if (currentIndex < options.length) {
+        progressSpan.textContent = `Option ${currentIndex + 1} of ${options.length}`;
+      } else if (!finalised) {
+        progressSpan.textContent = "Review your full package";
+      } else {
+        progressSpan.textContent = "Final package submitted";
+      }
+    }
+
+    function showOptionScreen() {
+      screenOption.style.display = 'block';
+      screenReview.style.display = 'none';
+      screenFinal.style.display = 'none';
+
+      const opt = options[currentIndex];
+
+      screenOption.innerHTML = `
+        <div class="option-box">
+          <h2>${opt.id}) ${opt.title}</h2>
+          <p class="desc">${opt.desc}</p>
+          <p class="revenue">Revenue: +£${opt.revenue} bn</p>
+          <p><strong>Pros:</strong></p>
+          <ul class="pros">
+            ${opt.pros.map(p => `<li>${p}</li>`).join("")}
+          </ul>
+          <p><strong>Cons:</strong></p>
+          <ul class="cons">
+            ${opt.cons.map(c => `<li>${c}</li>`).join("")}
+          </ul>
+          <div class="controls">
+            <label class="small">
+              <input type="checkbox" id="ack-read">
+              I have read the description, pros and cons for this option.
+            </label>
+            <button class="primary" id="btn-choose" disabled>Choose this option</button>
+            <button class="secondary" id="btn-skip" disabled>Skip this option</button>
+            <button class="secondary" id="btn-back" ${currentIndex === 0 ? "disabled" : ""}>Back</button>
+          </div>
+        </div>
+      `;
+
+      const btnChoose = document.getElementById('btn-choose');
+      const btnSkip = document.getElementById('btn-skip');
+      const btnBack = document.getElementById('btn-back');
+      const ackRead = document.getElementById('ack-read');
+
+      ackRead.addEventListener('change', () => {
+        const enabled = ackRead.checked;
+        btnChoose.disabled = !enabled;
+        btnSkip.disabled = !enabled;
+      });
+
+      btnChoose.onclick = () => {
+        if (!ackRead.checked) return;
+        selections[currentIndex] = true;
+        nextOption();
+      };
+      btnSkip.onclick = () => {
+        if (!ackRead.checked) return;
+        selections[currentIndex] = false;
+        nextOption();
+      };
+      btnBack.onclick = () => {
+        if (currentIndex > 0) {
+          currentIndex--;
+          updateTopBar();
+          showOptionScreen();
+        }
+      };
+
+      updateTopBar();
+    }
+
+    function nextOption() {
+      if (currentIndex < options.length - 1) {
+        currentIndex++;
+        updateTopBar();
+        showOptionScreen();
+      } else {
+        currentIndex = options.length;
+        updateTopBar();
+        showReviewScreen();
+      }
+    }
+
+    function showReviewScreen() {
+      screenOption.style.display = 'none';
+      screenReview.style.display = 'block';
+      screenFinal.style.display = 'none';
+
+      let html = `
+        <h2>Review your choices</h2>
+        <p>You can adjust your decisions before submitting your final package.</p>
+      `;
+
+      options.forEach((opt, i) => {
+        html += `
+          <div class="option-summary">
+            <label class="checkbox-inline">
+              <input type="checkbox" data-index="${i}" ${selections[i] ? "checked" : ""}>
+              <strong>${opt.id}) ${opt.title}</strong>
+            </label>
+            <div class="small">Revenue: +£${opt.revenue} bn</div>
+          </div>
+        `;
+      });
+
+      html += `
+        <p><strong>Current total:</strong> £${calculateTotal()} bn</p>
+        <div class="controls">
+          <button class="secondary" id="btn-review-back">Go back to last option</button>
+          <button class="primary" id="btn-finalise">Confirm final choices</button>
+        </div>
+      `;
+
+      screenReview.innerHTML = html;
+
+      screenReview.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+        cb.addEventListener('change', (e) => {
+          const idx = Number(e.target.dataset.index);
+          selections[idx] = e.target.checked;
+          updateTopBar();
+          showReviewScreen();
+        });
+      });
+
+      document.getElementById('btn-review-back').onclick = () => {
+        currentIndex = options.length - 1;
+        updateTopBar();
+        showOptionScreen();
+      };
+      document.getElementById('btn-finalise').onclick = () => {
+        finalised = true;
+        updateTopBar();
+        showFinalScreen();
+      };
+
+      updateTopBar();
+    }
+
+    function describeBalanceScore(score) {
+      if (score > 0) {
+        return "On balance, the pros slightly outweigh the cons.";
+      } else if (score < 0) {
+        return "On balance, the cons slightly outweigh the pros.";
+      } else {
+        return "Pros and cons are fairly evenly balanced.";
+      }
+    }
+
+    function showFinalScreen() {
+      screenOption.style.display = 'none';
+      screenReview.style.display = 'none';
+      screenFinal.style.display = 'block';
+
+      const total = calculateTotal();
+      const score = calculateScore();
+
+      let verdict;
+      if (score >= 3 && total >= TARGET && total <= TARGET + 10) {
+        verdict = "Overall this looks like a reasonably balanced and defensible package.";
+      } else if (score < 0) {
+        verdict = "Your package leans heavily on measures where the cons may outweigh the pros.";
+      } else if (total < TARGET) {
+        verdict = "You have not raised enough revenue to hit the £30 bn target.";
+      } else {
+        verdict = "Your package raises the money, but there may be important trade-offs to think about.";
+      }
+
+      let chosenListHtml = "";
+      const chosenLinesForText = [];
+
+      options.forEach((opt, i) => {
+        if (selections[i]) {
+          const s = opt.balanceScore;
+          const label = s > 0 ? "+1" : s < 0 ? "−1" : "0";
+          chosenListHtml += `
+            <li>
+              <strong>${opt.id}) ${opt.title}</strong> (+£${opt.revenue} bn) – balance score ${label}.
+              <br><span class="small">${describeBalanceScore(s)}</span>
+            </li>
+          `;
+          chosenLinesForText.push(`- ${opt.id}) ${opt.title} (+£${opt.revenue} bn), balance score ${label}`);
+        }
+      });
+
+      if (!chosenListHtml) {
+        chosenListHtml = "<li>No options chosen! This would not be acceptable in a real UK Budget.</li>";
+        chosenLinesForText.push("No options chosen – this would not be acceptable in a real UK Budget.");
+      }
+
+      const scoreExplanation = `
+        <div class="score-legend">
+          <p><strong>How the balance score works:</strong></p>
+          <ul>
+            <li><strong>+1</strong> – the measure has strong or clear pros compared with its cons.</li>
+            <li><strong>0</strong> – the pros and cons are fairly balanced or uncertain.</li>
+            <li><strong>−1</strong> – the measure carries significant risks or costs compared with its benefits.</li>
+          </ul>
+          <p>Your package score is the sum of the balance scores for each option you chose.</p>
+        </div>
+      `;
+
+      const summaryText = `Rachel Reeves Budget Challenge – My Package
+
+Total extra revenue: £${total} bn (target: £30 bn)
+Overall package balance score: ${score}
+
+Chosen measures:
+${chosenLinesForText.join("\n")}
+
+One thing I would defend in my package is:
+[Type your answer here in OneNote.]
+
+One change I might make is:
+[Type your answer here in OneNote.]`;
+
+      screenFinal.innerHTML = `
+        <h2>Your final budget package</h2>
+        <p><strong>Total extra revenue:</strong> £${total} bn (target: £30 bn)</p>
+        <p><strong>Overall package balance score:</strong> ${score}</p>
+        <p>${verdict}</p>
+        ${scoreExplanation}
+        <div class="final-list">
+          <h3>Your chosen measures:</h3>
+          <ul>${chosenListHtml}</ul>
+        </div>
+        <div class="controls" style="margin-top:1rem;">
+          <button class="primary" id="btn-copy">Copy my summary for OneNote</button>
+        </div>
+        <p class="small"><strong>
+          Now press this button to copy your summary and paste it into the OneNote page your teacher has told you to use.
+        </strong></p>
+        <p class="small">
+          Extension: Do you agree with this scoring of your package? Choose one measure you would keep and one you might replace,
+          and explain why in terms of economic effects, fairness and political realism.
+        </p>
+      `;
+
+      const btnCopy = document.getElementById('btn-copy');
+      btnCopy.onclick = async () => {
+        try {
+          if (navigator.clipboard && navigator.clipboard.writeText) {
+            await navigator.clipboard.writeText(summaryText);
+            btnCopy.textContent = "Copied! You can now paste into OneNote.";
+          } else {
+            window.prompt("Copy your summary below and paste it into OneNote:", summaryText);
+          }
+        } catch (e) {
+          alert("Copy failed. If this happens again, select the text on this page and copy it manually.");
+        }
+      };
+    }
+
+    // Initialise
+    showOptionScreen();
+  </script>
+</body>
+</html>
